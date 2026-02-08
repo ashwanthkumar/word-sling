@@ -22,7 +22,7 @@ window.game = game;
 
 // Load saved progress
 const progress = loadProgress();
-game.difficulty = progress.settings.difficulty || 'medium';
+game.difficulty = progress.settings.difficulty || 'easy';
 game.wordIndex = progress.settings.wordIndex || 0;
 game.totalWordsCompleted = progress.settings.totalWordsCompleted || 0;
 

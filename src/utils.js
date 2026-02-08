@@ -12,7 +12,7 @@ export function loadProgress() {
       if (parsed.settings && parsed.settings.lastGrade !== undefined) {
         parsed.settings.wordIndex = parsed.settings.wordIndex || 0;
         parsed.settings.totalWordsCompleted = parsed.settings.totalWordsCompleted || 0;
-        parsed.settings.difficulty = parsed.settings.difficulty || 'medium';
+        parsed.settings.difficulty = parsed.settings.difficulty || 'easy';
         delete parsed.settings.lastGrade;
         delete parsed.settings.totalLevelsCompleted;
       }
@@ -27,7 +27,7 @@ export function loadProgress() {
       totalWordsLearned: 0,
       wordIndex: 0,
       totalWordsCompleted: 0,
-      difficulty: 'medium',
+      difficulty: 'easy',
       vibration: true,
       music: true,
       sfx: true,

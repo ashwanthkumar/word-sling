@@ -9,7 +9,7 @@ export class StartScreen {
 
   _create() {
     const progress = loadProgress();
-    const difficulty = progress.settings.difficulty || 'medium';
+    const difficulty = progress.settings.difficulty || 'easy';
     this.game.difficulty = difficulty;
 
     const totalWords = progress.settings.totalWordsCompleted || 0;
@@ -94,6 +94,10 @@ export class StartScreen {
           <span class="option-label">Vibration</span>
           <button class="option-toggle ${s.vibration !== false ? 'on' : ''}" data-key="vibration">${s.vibration !== false ? 'ON' : 'OFF'}</button>
         </div>
+        <div class="option-reset-section">
+          <button class="option-reset-btn">RESET ALL DATA</button>
+          <p class="option-reset-note">This will erase all progress, scores, and word history. This cannot be undone.</p>
+        </div>
         <p class="options-dismiss">Tap outside to close</p>
       </div>
     `;
@@ -109,6 +113,23 @@ export class StartScreen {
         btn.classList.toggle('on', newVal);
         btn.textContent = newVal ? 'ON' : 'OFF';
       });
+    });
+
+    const resetBtn = overlay.querySelector('.option-reset-btn');
+    resetBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (resetBtn.dataset.confirm) {
+        localStorage.removeItem('wordSling_progress');
+        this.game.wordIndex = 0;
+        this.game.totalWordsCompleted = 0;
+        this.game.difficulty = 'easy';
+        overlay.remove();
+        this.show();
+      } else {
+        resetBtn.dataset.confirm = '1';
+        resetBtn.textContent = 'TAP AGAIN TO CONFIRM';
+        resetBtn.classList.add('confirming');
+      }
     });
 
     overlay.addEventListener('click', (e) => {

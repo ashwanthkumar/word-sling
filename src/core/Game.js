@@ -9,7 +9,7 @@ export class Game {
     this.paused = false;
 
     // Game data
-    this.difficulty = 'medium';
+    this.difficulty = 'easy';
     this.score = 0;
     this.currentWord = null;
     this.nextLetterIndex = 0;
