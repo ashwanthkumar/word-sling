@@ -1,3 +1,5 @@
+import { TTS } from '../audio/TTS.js';
+
 export class LevelComplete {
   init() {
     this.el = null;
@@ -40,7 +42,7 @@ export class LevelComplete {
     // Replay buttons
     this.el.querySelectorAll('.replay-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        const tts = this.game.systems.find(s => s.constructor.name === 'TTS');
+        const tts = this.game.getSystem(TTS);
         if (tts) {
           tts.speakWordAndMeaning(btn.dataset.word, btn.dataset.meaning);
         }
