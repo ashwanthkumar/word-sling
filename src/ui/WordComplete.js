@@ -5,7 +5,7 @@ export class WordComplete {
     this.waiting = false;
   }
 
-  show(word, wrongGrabs) {
+  show(word, wrongGrabs, totalWordsCompleted, newGunName) {
     this.hide();
     const stars = wrongGrabs === 0 ? 3 : wrongGrabs <= 2 ? 2 : 1;
     const starStr = '\u2b50'.repeat(stars);
@@ -16,6 +16,8 @@ export class WordComplete {
     this.el.innerHTML = `
       <div class="completed-word">${word}</div>
       <div class="star-rating">${starStr}</div>
+      <div class="word-number">Word #${totalWordsCompleted}</div>
+      ${newGunName ? `<div class="gun-upgrade-toast">NEW WEAPON: ${newGunName}!</div>` : ''}
     `;
 
     // Tap to skip
@@ -31,15 +33,7 @@ export class WordComplete {
   _advance() {
     this.waiting = false;
     this.hide();
-
-    const game = this.game;
-    game.currentWordIndex++;
-
-    if (game.currentWordIndex >= game.wordsPerLevel) {
-      game.setState('LEVEL_COMPLETE');
-    } else {
-      game.setState('PRE_LAUNCH');
-    }
+    this.game.setState('PRE_LAUNCH');
   }
 
   hide() {

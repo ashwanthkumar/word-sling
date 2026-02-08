@@ -75,38 +75,40 @@ html, body {
   margin-top: -0.5rem;
 }
 
-.grade-label {
+.difficulty-label {
   font-size: clamp(0.9rem, 3vw, 1.3rem);
   color: rgba(255, 255, 255, 0.7);
   letter-spacing: 0.2em;
   text-transform: uppercase;
 }
 
-.grade-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.difficulty-grid {
+  display: flex;
   gap: clamp(0.5rem, 2vw, 1rem);
   width: min(90vw, 500px);
+  justify-content: center;
 }
 
-.grade-btn {
+.diff-btn {
   background: rgba(255, 255, 255, 0.05);
   border: 2px solid rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   color: rgba(255, 255, 255, 0.7);
   font-family: 'Orbitron', monospace;
-  font-size: clamp(1rem, 3.5vw, 1.4rem);
-  padding: clamp(0.7rem, 3vw, 1.2rem) clamp(1rem, 4vw, 1.5rem);
+  font-size: clamp(0.9rem, 3vw, 1.2rem);
+  padding: clamp(0.7rem, 3vw, 1.2rem) clamp(1.2rem, 5vw, 2rem);
   cursor: pointer;
   transition: all 0.2s ease;
+  flex: 1;
+  text-align: center;
 }
 
-.grade-btn:hover {
+.diff-btn:hover {
   border-color: rgba(0, 255, 170, 0.4);
   background: rgba(0, 255, 170, 0.05);
 }
 
-.grade-btn.selected {
+.diff-btn.selected {
   border-color: #00ffaa;
   background: rgba(0, 255, 170, 0.15);
   color: #00ffaa;
@@ -143,6 +145,136 @@ html, body {
   letter-spacing: 0.1em;
 }
 
+.credits-btn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+  padding: 0.5rem 1.5rem;
+  cursor: pointer;
+  letter-spacing: 0.15em;
+  transition: all 0.2s ease;
+}
+
+.credits-btn:hover {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* =========================================
+   CREDITS OVERLAY
+   ========================================= */
+.credits-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  background: #0a0a1a;
+  overflow-y: auto;
+  padding: 2rem 1rem;
+}
+
+.credits-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.2rem, 3vh, 2rem);
+  max-width: min(90vw, 480px);
+  width: 100%;
+}
+
+.credits-content h2 {
+  font-size: clamp(2rem, 7vw, 3rem);
+  color: #00ffaa;
+  text-shadow: 0 0 20px rgba(0, 255, 170, 0.5);
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+}
+
+.credits-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.credits-section h3 {
+  font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 0.2rem;
+}
+
+.credits-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.4rem 0.8rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 6px;
+}
+
+.credits-row a {
+  color: #00ffaa;
+  text-decoration: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: clamp(0.85rem, 3vw, 1.1rem);
+  width: 100%;
+  text-align: center;
+}
+
+.credits-row a:hover {
+  text-decoration: underline;
+}
+
+.credits-label {
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+  color: rgba(255, 255, 255, 0.8);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.credits-desc {
+  font-size: clamp(0.7rem, 2vw, 0.85rem);
+  color: rgba(255, 255, 255, 0.35);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.credits-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.credits-footer a {
+  color: #00ffaa;
+  text-decoration: none;
+  font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.credits-footer a:hover {
+  text-decoration: underline;
+}
+
+.credits-license {
+  font-size: clamp(0.7rem, 2vw, 0.85rem);
+  color: rgba(255, 255, 255, 0.3);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.credits-dismiss {
+  font-size: clamp(0.65rem, 2vw, 0.8rem) !important;
+  color: rgba(255, 255, 255, 0.25) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  margin-top: 0.5rem;
+}
+
 /* =========================================
    HUD
    ========================================= */
@@ -159,17 +291,79 @@ html, body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: clamp(12px, 3vw, 24px);
+  margin-bottom: clamp(8px, 2vw, 16px);
 }
 
-.hud-word-count {
-  font-size: clamp(0.8rem, 3vw, 1.2rem);
+.quit-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
   color: rgba(255, 255, 255, 0.6);
+  font-size: clamp(1.2rem, 4vw, 1.6rem);
+  width: clamp(36px, 8vw, 44px);
+  height: clamp(36px, 8vw, 44px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.quit-btn:hover {
+  background: rgba(255, 68, 102, 0.15);
+  border-color: rgba(255, 68, 102, 0.4);
+  color: #ff4466;
+}
+
+.hud-gun-name {
+  font-size: clamp(0.7rem, 2.5vw, 1rem);
+  color: rgba(0, 255, 170, 0.6);
+  letter-spacing: 0.1em;
+  transition: opacity 0.5s ease;
+}
+
+.hud-gun-name.faded {
+  opacity: 0;
 }
 
 .hud-score {
   font-size: clamp(0.9rem, 3.5vw, 1.3rem);
   color: #00ffaa;
+}
+
+.hud-powerups {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: clamp(4px, 1vw, 8px);
+  min-height: 1.5rem;
+}
+
+.powerup-indicator {
+  font-size: clamp(0.6rem, 2vw, 0.8rem);
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+
+.shield-indicator {
+  background: rgba(68, 136, 255, 0.2);
+  color: #4488ff;
+  border: 1px solid rgba(68, 136, 255, 0.4);
+}
+
+.boost-indicator {
+  background: rgba(255, 136, 0, 0.2);
+  color: #ff8800;
+  border: 1px solid rgba(255, 136, 0, 0.4);
+}
+
+.thunder-indicator {
+  background: rgba(255, 221, 0, 0.2);
+  color: #ffdd00;
+  border: 1px solid rgba(255, 221, 0, 0.4);
 }
 
 .word-blanks {
@@ -260,112 +454,6 @@ html, body {
 }
 
 /* =========================================
-   LEVEL COMPLETE SCREEN
-   ========================================= */
-.level-complete {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(1rem, 3vh, 2rem);
-  padding: 2rem;
-  z-index: 10;
-  background: rgba(10, 10, 26, 0.85);
-}
-
-.level-complete h1 {
-  font-size: clamp(2rem, 7vw, 3.5rem);
-  color: #00ffaa;
-  text-shadow: 0 0 20px rgba(0, 255, 170, 0.5);
-  letter-spacing: 0.1em;
-}
-
-.level-complete .overall-stars {
-  font-size: clamp(2rem, 7vw, 3.5rem);
-}
-
-.word-results {
-  width: min(90vw, 500px);
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
-}
-
-.word-result-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: clamp(0.5rem, 2vw, 0.8rem) clamp(1rem, 3vw, 1.5rem);
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 8px;
-}
-
-.word-result-row .word-text {
-  font-size: clamp(0.9rem, 3.5vw, 1.3rem);
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  flex: 1;
-}
-
-.word-result-row .stars {
-  font-size: clamp(0.9rem, 3.5vw, 1.3rem);
-  margin: 0 0.5rem;
-}
-
-.word-result-row .replay-btn {
-  background: none;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 6px;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: clamp(1rem, 3vw, 1.3rem);
-  padding: 6px 10px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.word-result-row .replay-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.level-score {
-  font-size: clamp(0.9rem, 3.5vw, 1.3rem);
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.level-complete .btn-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-  width: min(85vw, 400px);
-}
-
-.level-complete .btn-group button {
-  background: rgba(255, 255, 255, 0.08);
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  border-radius: 12px;
-  color: #fff;
-  font-family: 'Orbitron', monospace;
-  font-size: clamp(0.9rem, 3.5vw, 1.3rem);
-  padding: clamp(0.7rem, 3vw, 1.1rem);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.level-complete .btn-group button:hover {
-  background: rgba(0, 255, 170, 0.1);
-  border-color: rgba(0, 255, 170, 0.4);
-}
-
-.level-complete .btn-group .primary-btn {
-  background: linear-gradient(135deg, #00ffaa, #00cc88);
-  border-color: transparent;
-  color: #0a0a1a;
-  font-weight: 700;
-}
-
-/* =========================================
    WORD COMPLETE OVERLAY
    ========================================= */
 .word-complete-overlay {
@@ -389,6 +477,25 @@ html, body {
 
 .word-complete-overlay .star-rating {
   font-size: clamp(2rem, 8vw, 3.5rem);
+}
+
+.word-complete-overlay .word-number {
+  font-size: clamp(0.8rem, 3vw, 1.1rem);
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.1em;
+}
+
+.gun-upgrade-toast {
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  color: #ffdd00;
+  text-shadow: 0 0 20px rgba(255, 221, 0, 0.6);
+  letter-spacing: 0.1em;
+  animation: gunUpgradePulse 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes gunUpgradePulse {
+  from { transform: scale(1); text-shadow: 0 0 20px rgba(255, 221, 0, 0.4); }
+  to { transform: scale(1.08); text-shadow: 0 0 40px rgba(255, 221, 0, 0.8); }
 }
 
 @keyframes wordGlow {
@@ -456,13 +563,13 @@ html, body {
    DESKTOP OVERRIDES — Make everything BIG
    ========================================= */
 @media (min-width: 768px) {
-  .grade-grid {
-    width: min(70vw, 600px);
+  .difficulty-grid {
+    width: min(70vw, 500px);
   }
 
-  .grade-btn {
+  .diff-btn {
     padding: 1rem 1.5rem;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
   }
 
   .launch-btn {
