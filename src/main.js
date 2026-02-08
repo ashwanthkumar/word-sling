@@ -18,6 +18,7 @@ import { GUN_LEVELS } from './config/guns.js';
 // Init game
 const container = document.getElementById('game-container');
 const game = new Game(container);
+window.game = game;
 
 // Load saved progress
 const progress = loadProgress();
