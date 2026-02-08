@@ -71,6 +71,35 @@ export class ParticleSystem {
     }
   }
 
+  powerUpBurst(x, y, color) {
+    for (let i = 0; i < 15; i++) {
+      const geo = new THREE.SphereGeometry(0.1, 4, 3);
+      const mat = new THREE.MeshBasicMaterial({
+        color,
+        transparent: true,
+        opacity: 1,
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(x, y, 0.5);
+
+      const angle = Math.random() * Math.PI * 2;
+      const speed = 3 + Math.random() * 5;
+
+      this.game.scene.add(mesh);
+      this.particles.push({
+        mesh,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 0.6 + Math.random() * 0.3,
+        maxLife: 0.6 + Math.random() * 0.3,
+      });
+    }
+  }
+
+  shieldBurst(x, y) {
+    this.burstAt(x, y, 0x4488ff, 8);
+  }
+
   update(dt) {
     // Update burst particles
     for (let i = this.particles.length - 1; i >= 0; i--) {
