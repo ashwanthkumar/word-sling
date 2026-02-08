@@ -4,10 +4,11 @@ import { ParticleSystem } from './ParticleSystem.js';
 import { PowerUpManager } from './PowerUpManager.js';
 import { AudioManager } from '../audio/AudioManager.js';
 import { HUD } from '../ui/HUD.js';
+import { loadProgress } from '../utils.js';
 
 export class CollisionSystem {
   init() {
-    this.collisionRadius = 0.7;
+    this.collisionRadius = 1.2;
   }
 
   update() {
@@ -103,6 +104,7 @@ export class CollisionSystem {
     if (audio) audio.playBuzz();
     if (particles) particles.burstAt(letter.mesh.position.x, letter.mesh.position.y, 0xff4466, 5);
     if (ship) ship.flashRed();
+    if (navigator.vibrate && loadProgress().settings.vibration !== false) navigator.vibrate(100);
 
     // Lose one collected letter
     if (this.game.nextLetterIndex > 0) {

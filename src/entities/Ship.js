@@ -18,10 +18,11 @@ export class Ship {
     this._createBoostGlow();
     this._setupInput();
 
-    // Position ship in lower portion of view
+    // Position ship in lower portion of view, z=1 so letters pass behind
     const bounds = this.game.getPlayBounds();
-    this.y = bounds.bottom * 0.45;
+    this.y = bounds.bottom * 0.25;
     this.group.position.y = this.y;
+    this.group.position.z = 1;
 
     // Hide initially (shown during PRE_LAUNCH/PLAYING)
     this.group.visible = false;
@@ -289,7 +290,7 @@ export class Ship {
 
   onResize() {
     const bounds = this.game.getPlayBounds();
-    this.y = bounds.bottom * 0.45;
+    this.y = bounds.bottom * 0.25;
     this.group.position.y = this.y;
   }
 }

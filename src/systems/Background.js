@@ -66,8 +66,6 @@ export class Background {
   }
 
   update(dt) {
-    if (this.game.state !== 'PLAYING' && this.game.state !== 'PRE_LAUNCH') return;
-
     const scrollSpeed = this.game.state === 'PLAYING' ? 1 : 0.3;
 
     this.starLayers.forEach(layer => {

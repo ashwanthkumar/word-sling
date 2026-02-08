@@ -17,12 +17,12 @@ export class PowerUpManager {
 
   activateShield() {
     this.shieldActive = true;
-    this.shieldTimer = 5;
+    this.shieldTimer = 10;
   }
 
   activateThunder() {
     this.thunderActive = true;
-    this.thunderTimer = 3;
+    this.thunderTimer = 5;
   }
 
   isBoostActive() {

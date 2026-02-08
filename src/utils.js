@@ -28,6 +28,9 @@ export function loadProgress() {
       wordIndex: 0,
       totalWordsCompleted: 0,
       difficulty: 'medium',
+      vibration: true,
+      music: true,
+      sfx: true,
     },
     words: {},
   };

@@ -1,3 +1,5 @@
+import { loadProgress } from '../utils.js';
+
 export class TTS {
   init() {
     this.synth = window.speechSynthesis;
@@ -5,6 +7,10 @@ export class TTS {
 
   speak(text, rate = 0.8) {
     return new Promise((resolve) => {
+      if (loadProgress().settings.music === false) {
+        resolve();
+        return;
+      }
       this.synth.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'en-US';

@@ -75,6 +75,25 @@ html, body {
   margin-top: -0.5rem;
 }
 
+.game-author {
+  font-size: clamp(0.7rem, 2.5vw, 0.95rem);
+  color: rgba(255, 255, 255, 0.4);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  position: absolute;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+  line-height: 1.6;
+  text-align: center;
+}
+
+.game-author a {
+  color: #00ffaa;
+  text-decoration: none;
+}
+
+.game-author a:hover {
+  text-decoration: underline;
+}
+
 .difficulty-label {
   font-size: clamp(0.9rem, 3vw, 1.3rem);
   color: rgba(255, 255, 255, 0.7);
@@ -145,6 +164,12 @@ html, body {
   letter-spacing: 0.1em;
 }
 
+.start-btns-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.options-btn,
 .credits-btn {
   background: none;
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -158,9 +183,83 @@ html, body {
   transition: all 0.2s ease;
 }
 
+.options-btn:hover,
 .credits-btn:hover {
   border-color: rgba(255, 255, 255, 0.3);
   color: rgba(255, 255, 255, 0.6);
+}
+
+/* =========================================
+   OPTIONS OVERLAY
+   ========================================= */
+.options-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  background: #0a0a1a;
+}
+
+.options-content {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 3vh, 1.8rem);
+  max-width: min(85vw, 400px);
+  width: 100%;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: clamp(1.5rem, 5vw, 2.5rem);
+}
+
+.options-content h2 {
+  font-size: clamp(1.5rem, 6vw, 2.2rem);
+  color: #00ffaa;
+  text-shadow: 0 0 20px rgba(0, 255, 170, 0.5);
+  letter-spacing: 0.1em;
+}
+
+.option-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+}
+
+.option-label {
+  font-size: clamp(0.9rem, 3vw, 1.1rem);
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 0.1em;
+}
+
+.option-toggle {
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(0.8rem, 2.5vw, 1rem);
+  padding: 0.4rem 1.2rem;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  transition: all 0.2s ease;
+  min-width: 70px;
+}
+
+.option-toggle.on {
+  border-color: #00ffaa;
+  background: rgba(0, 255, 170, 0.15);
+  color: #00ffaa;
+}
+
+.options-dismiss {
+  font-size: clamp(0.65rem, 2vw, 0.8rem) !important;
+  color: rgba(255, 255, 255, 0.25) !important;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  margin-top: 0.5rem;
 }
 
 /* =========================================

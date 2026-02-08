@@ -9,7 +9,7 @@ export const GUN_LEVELS = [
 ];
 
 export const BOOST_CONFIG = {
-  duration: 6,
+  duration: 10,
   cooldownMultiplier: 0.5,
   extraProjectiles: 1,
   speedMultiplier: 1.3,

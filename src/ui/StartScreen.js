@@ -19,7 +19,6 @@ export class StartScreen {
     this.el.className = 'start-screen fade-in';
     this.el.innerHTML = `
       <div class="game-title">WORD SLING</div>
-      <div class="game-subtitle">COLLECT WORDS IN SPACE</div>
       <div class="difficulty-label">SELECT DIFFICULTY</div>
       <div class="difficulty-grid">
         <button class="diff-btn ${difficulty === 'easy' ? 'selected' : ''}" data-diff="easy">EASY</button>
@@ -28,7 +27,11 @@ export class StartScreen {
       </div>
       <button class="launch-btn">LAUNCH</button>
       <div class="stats-line">Words Built: ${totalWords} &nbsp;&middot;&nbsp; ${gun.name}</div>
-      <button class="credits-btn">CREDITS</button>
+      <div class="start-btns-row">
+        <button class="options-btn">OPTIONS</button>
+        <button class="credits-btn">CREDITS</button>
+      </div>
+      <div class="game-author">Made with ❤️ at Chennai, India</div>
     `;
 
     // Difficulty selection
@@ -49,12 +52,63 @@ export class StartScreen {
       this.game.setState('PRE_LAUNCH');
     });
 
+    // Options
+    this.el.querySelector('.options-btn').addEventListener('click', () => {
+      this._showOptions();
+    });
+
     // Credits
     this.el.querySelector('.credits-btn').addEventListener('click', () => {
       this._showCredits();
     });
 
     ui.appendChild(this.el);
+  }
+
+  _showOptions() {
+    const ui = document.getElementById('ui-layer');
+    const progress = loadProgress();
+    const s = progress.settings;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'options-overlay fade-in';
+    overlay.innerHTML = `
+      <div class="options-content">
+        <h2>Options</h2>
+        <div class="option-row">
+          <span class="option-label">Music</span>
+          <button class="option-toggle ${s.music !== false ? 'on' : ''}" data-key="music">${s.music !== false ? 'ON' : 'OFF'}</button>
+        </div>
+        <div class="option-row">
+          <span class="option-label">SFX</span>
+          <button class="option-toggle ${s.sfx !== false ? 'on' : ''}" data-key="sfx">${s.sfx !== false ? 'ON' : 'OFF'}</button>
+        </div>
+        <div class="option-row">
+          <span class="option-label">Vibration</span>
+          <button class="option-toggle ${s.vibration !== false ? 'on' : ''}" data-key="vibration">${s.vibration !== false ? 'ON' : 'OFF'}</button>
+        </div>
+        <p class="options-dismiss">Tap outside to close</p>
+      </div>
+    `;
+
+    overlay.querySelectorAll('.option-toggle').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const key = btn.dataset.key;
+        const p = loadProgress();
+        const newVal = p.settings[key] === false;
+        p.settings[key] = newVal;
+        saveProgress(p);
+        btn.classList.toggle('on', newVal);
+        btn.textContent = newVal ? 'ON' : 'OFF';
+      });
+    });
+
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.remove();
+    });
+
+    ui.appendChild(overlay);
   }
 
   _showCredits() {

@@ -1,7 +1,17 @@
+import { loadProgress } from '../utils.js';
+
 export class AudioManager {
   init() {
     this.ctx = null;
     this._initOnInteraction();
+  }
+
+  _isSfxEnabled() {
+    return loadProgress().settings.sfx !== false;
+  }
+
+  _isMusicEnabled() {
+    return loadProgress().settings.music !== false;
   }
 
   _initOnInteraction() {
@@ -28,6 +38,7 @@ export class AudioManager {
   }
 
   playChime(letterIndex) {
+    if (!this._isSfxEnabled()) return;
     const ctx = this._ensureCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -42,6 +53,7 @@ export class AudioManager {
   }
 
   playBuzz() {
+    if (!this._isSfxEnabled()) return;
     const ctx = this._ensureCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -56,6 +68,7 @@ export class AudioManager {
   }
 
   playWordComplete() {
+    if (!this._isMusicEnabled()) return;
     const ctx = this._ensureCtx();
     const notes = [261.6, 329.6, 392, 523.3, 659.3];
     notes.forEach((freq, i) => {
@@ -74,6 +87,7 @@ export class AudioManager {
   }
 
   playLaunch() {
+    if (!this._isMusicEnabled()) return;
     const ctx = this._ensureCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -89,6 +103,7 @@ export class AudioManager {
   }
 
   playShoot(gunIndex) {
+    if (!this._isSfxEnabled()) return;
     const ctx = this._ensureCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -106,6 +121,7 @@ export class AudioManager {
   }
 
   playPowerUpCollect() {
+    if (!this._isSfxEnabled()) return;
     const ctx = this._ensureCtx();
     const notes = [400, 600, 800, 1000];
     notes.forEach((freq, i) => {
@@ -124,6 +140,7 @@ export class AudioManager {
   }
 
   playShieldAbsorb() {
+    if (!this._isSfxEnabled()) return;
     const ctx = this._ensureCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
@@ -139,6 +156,7 @@ export class AudioManager {
   }
 
   playGunUpgrade() {
+    if (!this._isMusicEnabled()) return;
     const ctx = this._ensureCtx();
     const notes = [261.6, 329.6, 392, 523.3, 659.3, 784, 1047];
     notes.forEach((freq, i) => {
