@@ -27,25 +27,24 @@ export class LetterSpawner {
 
     if (!word) return;
 
-    // Spawn interval based on density
-    const [minDensity, maxDensity] = config.density;
-    const targetCount = Math.floor((minDensity + maxDensity) / 2);
-    const spawnInterval = 1.0 / (targetCount * 0.15);
+    const [, maxDensity] = config.density;
 
     this.spawnTimer += dt;
     this.correctSpawnTimer += dt;
 
-    // Ensure the next correct letter appears every 2-3 seconds
-    if (this.correctSpawnTimer >= 2.0 && nextIdx < word.length) {
+    // Guaranteed correct letter spawn on a timer
+    if (this.correctSpawnTimer >= config.correctInterval && nextIdx < word.length) {
       this._spawn(word[nextIdx], bounds, config.rainSpeed, true, config.hintLevel);
       this.correctSpawnTimer = 0;
     }
 
-    // General spawning
+    // Aggressive decoy spawning — fill the screen
+    const spawnInterval = 0.15; // spawn a new letter roughly every 150ms
     if (this.spawnTimer >= spawnInterval && this.letters.length < maxDensity) {
       this.spawnTimer = 0;
 
-      const isCorrect = Math.random() < 0.35 && nextIdx < word.length;
+      // Small chance for a correct letter in the general stream
+      const isCorrect = Math.random() < config.correctChance && nextIdx < word.length;
       if (isCorrect) {
         this._spawn(word[nextIdx], bounds, config.rainSpeed, true, config.hintLevel);
         this.correctSpawnTimer = 0;
@@ -60,7 +59,6 @@ export class LetterSpawner {
       const letter = this.letters[i];
       letter.update(dt);
 
-      // Remove if below screen
       if (letter.mesh.position.y < bounds.bottom - 2) {
         letter.destroy(this.game.scene);
         this.letters.splice(i, 1);
@@ -69,9 +67,9 @@ export class LetterSpawner {
   }
 
   _spawn(char, bounds, baseSpeed, isNextNeeded, hintLevel) {
-    const x = (Math.random() * 0.8 + 0.1) * (bounds.right - bounds.left) + bounds.left;
-    const y = bounds.top + 2;
-    const speed = (baseSpeed / 60) * 3 + Math.random() * 0.5;
+    const x = (Math.random() * 0.85 + 0.075) * (bounds.right - bounds.left) + bounds.left;
+    const y = bounds.top + 1 + Math.random() * 2;
+    const speed = (baseSpeed / 60) * 3 + Math.random() * 1.0;
 
     const letter = new LetterObject(char, x, y, speed, isNextNeeded, hintLevel);
     this.game.scene.add(letter.mesh);

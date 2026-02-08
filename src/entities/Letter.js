@@ -3,9 +3,13 @@ import * as THREE from 'three';
 // Shared letter textures cache
 const textureCache = new Map();
 
+// Monospace font for letter tiles — JetBrains Mono for crisp readability
+const FONT = '700 52px "JetBrains Mono", "Noto Sans Mono", "Courier New", monospace';
+
 function createLetterTexture(char, isNextNeeded, hintLevel) {
-  const key = `${char}_${isNextNeeded}_${hintLevel}`;
-  if (textureCache.has(key)) return textureCache.get(key);
+  // Only cache correct/needed letters (small set), decoys are too numerous
+  const cacheKey = isNextNeeded ? `${char}_${isNextNeeded}_${hintLevel}` : null;
+  if (cacheKey && textureCache.has(cacheKey)) return textureCache.get(cacheKey);
 
   const size = 128;
   const canvas = document.createElement('canvas');
@@ -34,23 +38,23 @@ function createLetterTexture(char, isNextNeeded, hintLevel) {
     ctx.strokeStyle = 'rgba(0, 255, 170, 0.5)';
     ctx.lineWidth = 2;
   } else {
-    ctx.fillStyle = 'rgba(100, 120, 180, 0.25)';
-    ctx.strokeStyle = 'rgba(150, 170, 220, 0.4)';
+    ctx.fillStyle = 'rgba(60, 70, 120, 0.2)';
+    ctx.strokeStyle = 'rgba(100, 120, 180, 0.3)';
     ctx.lineWidth = 2;
   }
   ctx.fill();
   ctx.stroke();
 
   // Letter text
-  ctx.font = 'bold 56px Orbitron, monospace';
+  ctx.font = FONT;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillStyle = isNextNeeded && hintLevel !== 'none' ? '#ffffff' : 'rgba(220, 230, 255, 0.9)';
+  ctx.fillStyle = isNextNeeded && hintLevel !== 'none' ? '#ffffff' : 'rgba(180, 190, 220, 0.75)';
   ctx.fillText(char, cx, cy + 2);
 
   const texture = new THREE.CanvasTexture(canvas);
   texture.minFilter = THREE.LinearFilter;
-  textureCache.set(key, texture);
+  if (cacheKey) textureCache.set(cacheKey, texture);
   return texture;
 }
 
@@ -65,10 +69,9 @@ export class LetterObject {
     this.speed = speed;
     this.alive = true;
     this.collected = false;
-    this.rotationSpeed = (Math.random() - 0.5) * 1.5;
 
     const texture = createLetterTexture(char, isNextNeeded, hintLevel);
-    const geo = new THREE.PlaneGeometry(1.3, 1.3);
+    const geo = new THREE.PlaneGeometry(1.1, 1.1);
     const mat = new THREE.MeshBasicMaterial({
       map: texture,
       transparent: true,
@@ -81,7 +84,7 @@ export class LetterObject {
 
     // Glow ring for next-needed letters (strong hint)
     if (isNextNeeded && hintLevel === 'strong') {
-      const ringGeo = new THREE.RingGeometry(0.7, 0.85, 6);
+      const ringGeo = new THREE.RingGeometry(0.6, 0.72, 6);
       const ringMat = new THREE.MeshBasicMaterial({
         color: 0x00ffaa,
         transparent: true,
@@ -98,9 +101,6 @@ export class LetterObject {
 
     // Fall downward
     this.mesh.position.y -= this.speed * dt;
-
-    // Slow rotation
-    this.mesh.rotation.z += this.rotationSpeed * dt;
 
     // Glow ring pulsing
     if (this.glowRing) {

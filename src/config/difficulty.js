@@ -1,59 +1,66 @@
 export const DIFFICULTY = {
-  1: { rainSpeed: 60, density: [6, 8], decoySimilarity: 'random', hintLevel: 'strong' },
-  2: { rainSpeed: 75, density: [8, 10], decoySimilarity: 'random', hintLevel: 'strong' },
-  3: { rainSpeed: 90, density: [8, 12], decoySimilarity: 'some', hintLevel: 'subtle' },
-  4: { rainSpeed: 100, density: [10, 12], decoySimilarity: 'similar', hintLevel: 'subtle' },
-  5: { rainSpeed: 115, density: [10, 14], decoySimilarity: 'many', hintLevel: 'none' },
-  6: { rainSpeed: 130, density: [12, 15], decoySimilarity: 'confusing', hintLevel: 'none' },
+  1: { rainSpeed: 55,  density: [15, 22], correctInterval: 4.0, correctChance: 0.12, hintLevel: 'strong' },
+  2: { rainSpeed: 65,  density: [18, 25], correctInterval: 4.5, correctChance: 0.10, hintLevel: 'strong' },
+  3: { rainSpeed: 75,  density: [20, 28], correctInterval: 5.0, correctChance: 0.10, hintLevel: 'subtle' },
+  4: { rainSpeed: 85,  density: [22, 30], correctInterval: 5.5, correctChance: 0.08, hintLevel: 'subtle' },
+  5: { rainSpeed: 95,  density: [25, 35], correctInterval: 6.0, correctChance: 0.07, hintLevel: 'none' },
+  6: { rainSpeed: 105, density: [28, 40], correctInterval: 6.5, correctChance: 0.06, hintLevel: 'none' },
 };
 
-const SIMILAR_LETTERS = {
-  B: ['D', 'P'],
-  D: ['B', 'P'],
-  P: ['B', 'D', 'Q'],
-  Q: ['O', 'P'],
-  M: ['N', 'W'],
-  N: ['M', 'H'],
-  V: ['W', 'U'],
-  W: ['V', 'M'],
-  I: ['L', 'T'],
-  L: ['I', 'T'],
-  E: ['F'],
-  F: ['E', 'T'],
-  C: ['G', 'O'],
-  G: ['C', 'Q'],
-  O: ['Q', 'C'],
-};
+// Fun UTF-8 decoy characters — mix of scripts, symbols, math, and lookalikes
+const UTF8_DECOYS = [
+  // Greek
+  'Α', 'Β', 'Γ', 'Δ', 'Ε', 'Ζ', 'Η', 'Θ', 'Λ', 'Μ', 'Ξ', 'Π', 'Σ', 'Φ', 'Ψ', 'Ω',
+  'α', 'β', 'γ', 'δ', 'ε', 'ζ', 'η', 'θ', 'λ', 'μ', 'π', 'σ', 'φ', 'ψ', 'ω',
+  // Cyrillic
+  'Д', 'Ж', 'И', 'Л', 'Ф', 'Ц', 'Ч', 'Ш', 'Щ', 'Э', 'Ю', 'Я',
+  'д', 'ж', 'з', 'и', 'к', 'л', 'м', 'н', 'п', 'т', 'ф', 'ц', 'ч', 'ш', 'щ', 'э', 'ю', 'я',
+  // Japanese Katakana
+  'ア', 'イ', 'ウ', 'エ', 'オ', 'カ', 'キ', 'ク', 'ケ', 'コ', 'サ', 'シ', 'ス', 'セ', 'ソ',
+  'タ', 'チ', 'ツ', 'テ', 'ト', 'ナ', 'ニ', 'ヌ', 'ネ', 'ノ', 'ハ', 'ヒ', 'フ', 'ヘ', 'ホ',
+  'マ', 'ミ', 'ム', 'メ', 'モ', 'ヤ', 'ユ', 'ヨ', 'ラ', 'リ', 'ル', 'レ', 'ロ', 'ワ', 'ヲ', 'ン',
+  // Korean Jamo
+  'ㄱ', 'ㄴ', 'ㄷ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ',
+  // Math / Symbols
+  '∀', '∃', '∇', '∞', '∑', '∏', '√', '∂', '∫', '≈', '≠', '≤', '≥', '±', '×', '÷',
+  '⊕', '⊗', '⊥', '∠', '∴', '∵', '⊂', '⊃', '∩', '∪',
+  // Misc symbols
+  '☆', '★', '♠', '♣', '♥', '♦', '♪', '♫', '☀', '☁', '☂', '⚡', '⚙', '⚛',
+  '✦', '✧', '◆', '◇', '○', '●', '□', '■', '△', '▽', '◎', '◉',
+  // Currency & misc
+  '¥', '€', '£', '¢', '₹', '₿', '§', '¶', '©', '®', '™',
+  // Arrows
+  '↑', '↓', '←', '→', '↗', '↘', '↙', '↖', '⇒', '⇐', '⇑', '⇓',
+  // Box drawing / blocks
+  '░', '▒', '▓', '█', '▀', '▄', '▌', '▐',
+  // Devanagari
+  'अ', 'आ', 'इ', 'ई', 'उ', 'ऊ', 'ए', 'ऐ', 'ओ', 'औ', 'क', 'ख', 'ग', 'घ',
+  'च', 'छ', 'ज', 'झ', 'ट', 'ठ', 'ड', 'ढ', 'ण', 'त', 'थ', 'द', 'ध', 'न',
+  'प', 'फ', 'ब', 'भ', 'म', 'य', 'र', 'ल', 'व', 'श', 'ष', 'स', 'ह',
+  // Thai
+  'ก', 'ข', 'ค', 'ง', 'จ', 'ฉ', 'ช', 'ซ', 'ด', 'ต', 'ถ', 'ท', 'น', 'บ', 'ป', 'พ', 'ม', 'ย', 'ร', 'ล', 'ว', 'ส', 'ห', 'อ',
+  // Arabic
+  'ا', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س', 'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'و', 'ي',
+  // Runic
+  'ᚠ', 'ᚢ', 'ᚦ', 'ᚨ', 'ᚱ', 'ᚲ', 'ᚷ', 'ᚹ', 'ᚺ', 'ᚾ', 'ᛁ', 'ᛃ', 'ᛇ', 'ᛈ', 'ᛉ', 'ᛊ', 'ᛏ', 'ᛒ', 'ᛗ', 'ᛚ', 'ᛞ', 'ᛟ',
+  // Georgian
+  'ა', 'ბ', 'გ', 'დ', 'ე', 'ვ', 'ზ', 'თ', 'ი', 'კ', 'ლ', 'მ', 'ნ', 'ო', 'პ',
+  // Emoji-like symbols
+  '⌘', '⌥', '⌫', '⏎', '⎋', '⏏', '⏩', '⏪', '⏫', '⏬',
+];
 
+// Also keep regular A-Z for some English letter noise
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
 export function getDecoyLetter(word, grade) {
-  const config = DIFFICULTY[grade];
   const wordLetters = new Set(word.split(''));
 
-  if (config.decoySimilarity === 'random') {
-    let letter;
-    do {
-      letter = ALPHABET[Math.floor(Math.random() * 26)];
-    } while (wordLetters.has(letter));
-    return letter;
+  // 70% chance of UTF-8 character, 30% chance of English letter
+  if (Math.random() < 0.7) {
+    return UTF8_DECOYS[Math.floor(Math.random() * UTF8_DECOYS.length)];
   }
 
-  // For higher grades, bias toward similar-looking letters
-  const similarChance = config.decoySimilarity === 'some' ? 0.3 :
-    config.decoySimilarity === 'similar' ? 0.5 :
-    config.decoySimilarity === 'many' ? 0.7 : 0.85;
-
-  if (Math.random() < similarChance) {
-    const wordArr = word.split('');
-    const letter = wordArr[Math.floor(Math.random() * wordArr.length)];
-    const similars = SIMILAR_LETTERS[letter];
-    if (similars && similars.length > 0) {
-      const pick = similars[Math.floor(Math.random() * similars.length)];
-      if (!wordLetters.has(pick)) return pick;
-    }
-  }
-
+  // English decoy
   let letter;
   do {
     letter = ALPHABET[Math.floor(Math.random() * 26)];
