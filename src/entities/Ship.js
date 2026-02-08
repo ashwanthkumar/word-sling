@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { ShootingSystem } from '../systems/ShootingSystem.js';
+import { PowerUpManager } from '../systems/PowerUpManager.js';
 
 export class Ship {
   init() {
@@ -8,9 +10,12 @@ export class Ship {
     this.dragging = false;
     this.touchStartX = 0;
     this.shipStartX = 0;
+    this.isFiring = false;
 
     this._createShipMesh();
     this._createEngineGlow();
+    this._createShieldGlow();
+    this._createBoostGlow();
     this._setupInput();
 
     // Position ship in lower portion of view
@@ -24,6 +29,10 @@ export class Ship {
 
   onStateChange(newState) {
     this.group.visible = (newState === 'PRE_LAUNCH' || newState === 'PLAYING' || newState === 'WORD_COMPLETE');
+    if (newState !== 'PLAYING') {
+      this.isFiring = false;
+      this.dragging = false;
+    }
   }
 
   _createShipMesh() {
@@ -85,7 +94,6 @@ export class Ship {
   }
 
   _createEngineGlow() {
-    // Engine glow — point light + small glowing sphere
     const glowGeo = new THREE.SphereGeometry(0.25, 6, 4);
     const glowMat = new THREE.MeshBasicMaterial({
       color: 0xff8800,
@@ -96,10 +104,40 @@ export class Ship {
     this.engineGlow.position.y = -0.9;
     this.group.add(this.engineGlow);
 
-    // Engine light
     this.engineLight = new THREE.PointLight(0xff6600, 0.6, 5);
     this.engineLight.position.y = -1;
     this.group.add(this.engineLight);
+  }
+
+  _createShieldGlow() {
+    const geo = new THREE.SphereGeometry(1.0, 12, 8);
+    const mat = new THREE.MeshBasicMaterial({
+      color: 0x4488ff,
+      transparent: true,
+      opacity: 0.0,
+      side: THREE.DoubleSide,
+    });
+    this.shieldSphere = new THREE.Mesh(geo, mat);
+    this.group.add(this.shieldSphere);
+  }
+
+  _createBoostGlow() {
+    const geo = new THREE.SphereGeometry(0.8, 8, 6);
+    const mat = new THREE.MeshBasicMaterial({
+      color: 0xff8800,
+      transparent: true,
+      opacity: 0.0,
+    });
+    this.boostSphere = new THREE.Mesh(geo, mat);
+    this.group.add(this.boostSphere);
+  }
+
+  setShieldGlow(active) {
+    this.shieldSphere.material.opacity = active ? 0.15 : 0.0;
+  }
+
+  setBoostGlow(active) {
+    this.boostSphere.material.opacity = active ? 0.12 : 0.0;
   }
 
   _setupInput() {
@@ -112,15 +150,16 @@ export class Ship {
       e.preventDefault();
       const touch = e.touches[0];
       this.dragging = true;
+      this.isFiring = true;
       this.touchId = touch.identifier;
       this.touchStartX = touch.clientX;
       this.shipStartX = this.targetX;
+      this._startAutoFire();
     }, { passive: false });
 
     el.addEventListener('touchmove', (e) => {
       if (!this.dragging) return;
       e.preventDefault();
-      // Find the original touch by identifier
       let touch = null;
       for (let i = 0; i < e.touches.length; i++) {
         if (e.touches[i].identifier === this.touchId) {
@@ -138,15 +177,25 @@ export class Ship {
       this.targetX = Math.max(bounds.left + 1, Math.min(bounds.right - 1, this.targetX));
     }, { passive: false });
 
-    el.addEventListener('touchend', () => { this.dragging = false; });
-    el.addEventListener('touchcancel', () => { this.dragging = false; });
+    el.addEventListener('touchend', () => {
+      this.dragging = false;
+      this.isFiring = false;
+      this._stopAutoFire();
+    });
+    el.addEventListener('touchcancel', () => {
+      this.dragging = false;
+      this.isFiring = false;
+      this._stopAutoFire();
+    });
 
     // Mouse input for desktop
     el.addEventListener('mousedown', (e) => {
       if (!isPlayable()) return;
       this.dragging = true;
+      this.isFiring = true;
       this.touchStartX = e.clientX;
       this.shipStartX = this.targetX;
+      this._startAutoFire();
     });
 
     window.addEventListener('mousemove', (e) => {
@@ -160,7 +209,25 @@ export class Ship {
       this.targetX = Math.max(bounds.left + 1, Math.min(bounds.right - 1, this.targetX));
     });
 
-    window.addEventListener('mouseup', () => { this.dragging = false; });
+    window.addEventListener('mouseup', () => {
+      this.dragging = false;
+      this.isFiring = false;
+      this._stopAutoFire();
+    });
+  }
+
+  _startAutoFire() {
+    const shooting = this.game.getSystem(ShootingSystem);
+    if (shooting) {
+      shooting.isFiring = true;
+    }
+  }
+
+  _stopAutoFire() {
+    const shooting = this.game.getSystem(ShootingSystem);
+    if (shooting) {
+      shooting.isFiring = false;
+    }
   }
 
   flashRed() {
@@ -193,6 +260,23 @@ export class Ship {
     const pulse = 0.7 + Math.sin(Date.now() * 0.01) * 0.3;
     this.engineGlow.material.opacity = pulse;
     this.engineLight.intensity = 0.4 + pulse * 0.3;
+
+    // Shield glow pulsing
+    const pm = this.game.getSystem(PowerUpManager);
+    if (pm) {
+      if (pm.isShieldActive()) {
+        const sp = 0.1 + Math.sin(Date.now() * 0.005) * 0.08;
+        this.shieldSphere.material.opacity = sp;
+      } else {
+        this.shieldSphere.material.opacity = 0;
+      }
+      if (pm.isBoostActive()) {
+        const bp = 0.08 + Math.sin(Date.now() * 0.008) * 0.06;
+        this.boostSphere.material.opacity = bp;
+      } else {
+        this.boostSphere.material.opacity = 0;
+      }
+    }
 
     // Update ship light position
     this.game.shipLight.position.x = this.x;
