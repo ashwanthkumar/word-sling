@@ -35,8 +35,13 @@ export class CollisionSystem {
 
       if (dist < this.collisionRadius) {
         if (letter.char === word[nextIdx]) {
+          // Correct next-needed letter
           this._collectCorrect(letter, spawner, shipPos);
+        } else if (word.includes(letter.char)) {
+          // Letter is in the word but not next needed — pass through
+          continue;
         } else {
+          // Decoy letter — penalty
           this._hitWrong(letter, spawner, ship);
         }
       }
