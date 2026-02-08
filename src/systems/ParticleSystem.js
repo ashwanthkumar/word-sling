@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { Ship } from '../entities/Ship.js';
 
 export class ParticleSystem {
   init() {
@@ -96,7 +97,7 @@ export class ParticleSystem {
 
     // Engine trail
     if (this.game.state === 'PLAYING') {
-      const ship = this.game.systems.find(s => s.constructor.name === 'Ship');
+      const ship = this.game.getSystem(Ship);
       if (ship) {
         this._updateTrail(ship, dt);
       }

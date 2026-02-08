@@ -104,43 +104,52 @@ export class Ship {
 
   _setupInput() {
     const el = this.game.renderer.domElement;
+    const isPlayable = () => this.game.state === 'PLAYING';
 
     // Touch input
     el.addEventListener('touchstart', (e) => {
+      if (!isPlayable()) return;
       e.preventDefault();
       const touch = e.touches[0];
       this.dragging = true;
+      this.touchId = touch.identifier;
       this.touchStartX = touch.clientX;
       this.shipStartX = this.targetX;
     }, { passive: false });
 
     el.addEventListener('touchmove', (e) => {
-      e.preventDefault();
       if (!this.dragging) return;
-      const touch = e.touches[0];
+      e.preventDefault();
+      // Find the original touch by identifier
+      let touch = null;
+      for (let i = 0; i < e.touches.length; i++) {
+        if (e.touches[i].identifier === this.touchId) {
+          touch = e.touches[i];
+          break;
+        }
+      }
+      if (!touch) return;
       const dx = touch.clientX - this.touchStartX;
-      // Convert pixel delta to world units
       const bounds = this.game.getPlayBounds();
       const worldWidth = bounds.right - bounds.left;
       const screenWidth = window.innerWidth;
       const worldDx = (dx / screenWidth) * worldWidth;
       this.targetX = this.shipStartX + worldDx;
-      // Clamp
       this.targetX = Math.max(bounds.left + 1, Math.min(bounds.right - 1, this.targetX));
     }, { passive: false });
 
-    el.addEventListener('touchend', () => {
-      this.dragging = false;
-    });
+    el.addEventListener('touchend', () => { this.dragging = false; });
+    el.addEventListener('touchcancel', () => { this.dragging = false; });
 
     // Mouse input for desktop
     el.addEventListener('mousedown', (e) => {
+      if (!isPlayable()) return;
       this.dragging = true;
       this.touchStartX = e.clientX;
       this.shipStartX = this.targetX;
     });
 
-    el.addEventListener('mousemove', (e) => {
+    window.addEventListener('mousemove', (e) => {
       if (!this.dragging) return;
       const dx = e.clientX - this.touchStartX;
       const bounds = this.game.getPlayBounds();
@@ -151,9 +160,7 @@ export class Ship {
       this.targetX = Math.max(bounds.left + 1, Math.min(bounds.right - 1, this.targetX));
     });
 
-    el.addEventListener('mouseup', () => {
-      this.dragging = false;
-    });
+    window.addEventListener('mouseup', () => { this.dragging = false; });
   }
 
   flashRed() {

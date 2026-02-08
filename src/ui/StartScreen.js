@@ -48,19 +48,15 @@ export class StartScreen {
   }
 
   show() {
-    if (this.el) {
-      this.el.remove();
-    }
+    this.hide();
     this._create();
   }
 
   hide() {
     if (this.el) {
-      this.el.classList.add('fade-out');
-      setTimeout(() => {
-        if (this.el) this.el.remove();
-        this.el = null;
-      }, 300);
+      const el = this.el;
+      this.el = null;
+      el.remove();
     }
   }
 
