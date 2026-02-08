@@ -1,20 +1,33 @@
-import { WORD_DB } from './config/words.js';
+import { WORD_LIST } from './config/words.js';
+import { GUN_LEVELS } from './config/guns.js';
 
 const STORAGE_KEY = 'wordSling_progress';
 
 export function loadProgress() {
   try {
     const data = localStorage.getItem(STORAGE_KEY);
-    if (data) return JSON.parse(data);
+    if (data) {
+      const parsed = JSON.parse(data);
+      // Migrate old format
+      if (parsed.settings && parsed.settings.lastGrade !== undefined) {
+        parsed.settings.wordIndex = parsed.settings.wordIndex || 0;
+        parsed.settings.totalWordsCompleted = parsed.settings.totalWordsCompleted || 0;
+        parsed.settings.difficulty = parsed.settings.difficulty || 'medium';
+        delete parsed.settings.lastGrade;
+        delete parsed.settings.totalLevelsCompleted;
+      }
+      return parsed;
+    }
   } catch (e) {
     // ignore
   }
   return {
     settings: {
-      lastGrade: 3,
       totalScore: 0,
       totalWordsLearned: 0,
-      totalLevelsCompleted: 0,
+      wordIndex: 0,
+      totalWordsCompleted: 0,
+      difficulty: 'medium',
     },
     words: {},
   };
@@ -28,13 +41,12 @@ export function saveProgress(progress) {
   }
 }
 
-export function updateWordProgress(word, grade, wasClean) {
+export function updateWordProgress(word, wasClean) {
   const progress = loadProgress();
   const key = word.toLowerCase();
 
   if (!progress.words[key]) {
     progress.words[key] = {
-      grade,
       attempts: 0,
       perfectAttempts: 0,
       wrongGrabs: 0,
@@ -87,37 +99,40 @@ function calculateReviewInterval(confidence, streak) {
   return 720;
 }
 
-export function selectWordsForLevel(grade, count = 5) {
+export function getNextWord(wordIndex) {
+  // Every 5th word, try to insert a review word
+  if (wordIndex > 0 && wordIndex % 5 === 0) {
+    const reviewWord = getReviewWord();
+    if (reviewWord) return reviewWord;
+  }
+  // Wrap around if we've exhausted the list
+  return WORD_LIST[wordIndex % WORD_LIST.length];
+}
+
+function getReviewWord() {
   const now = new Date();
-  const gradeWords = WORD_DB[grade] || [];
   const progress = loadProgress();
+  const dueWords = [];
 
-  const dueForReview = gradeWords.filter(w => {
-    const data = progress.words[w.word.toLowerCase()];
-    return data && new Date(data.nextReview) <= now && data.confidence < 0.8;
-  });
-
-  const newWords = gradeWords.filter(w => {
-    return !progress.words[w.word.toLowerCase()];
-  });
-
-  const masteredDue = gradeWords.filter(w => {
-    const data = progress.words[w.word.toLowerCase()];
-    return data && data.status === 'mastered' && new Date(data.nextReview) <= now;
-  });
-
-  let selected = [];
-  selected.push(...shuffle(dueForReview).slice(0, 2));
-  selected.push(...shuffle(newWords).slice(0, count - selected.length));
-  if (selected.length < count) {
-    selected.push(...shuffle(masteredDue).slice(0, count - selected.length));
-  }
-  if (selected.length < count) {
-    const remaining = gradeWords.filter(w => !selected.includes(w));
-    selected.push(...shuffle(remaining).slice(0, count - selected.length));
+  for (const [key, data] of Object.entries(progress.words)) {
+    if (data.confidence < 0.8 && new Date(data.nextReview) <= now) {
+      const entry = WORD_LIST.find(w => w.word.toLowerCase() === key);
+      if (entry) dueWords.push(entry);
+    }
   }
 
-  return shuffle(selected.slice(0, count));
+  if (dueWords.length === 0) return null;
+  return dueWords[Math.floor(Math.random() * dueWords.length)];
+}
+
+export function getGunLevel(totalWordsCompleted) {
+  let best = GUN_LEVELS[0];
+  for (const gun of GUN_LEVELS) {
+    if (totalWordsCompleted >= gun.wordsNeeded) {
+      best = gun;
+    }
+  }
+  return best;
 }
 
 export function shuffle(arr) {

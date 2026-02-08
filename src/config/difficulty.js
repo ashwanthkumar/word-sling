@@ -1,10 +1,7 @@
 export const DIFFICULTY = {
-  1: { rainSpeed: 55,  density: [15, 22], correctInterval: 4.0, correctChance: 0.12, hintLevel: 'strong' },
-  2: { rainSpeed: 65,  density: [18, 25], correctInterval: 4.5, correctChance: 0.10, hintLevel: 'strong' },
-  3: { rainSpeed: 75,  density: [20, 28], correctInterval: 5.0, correctChance: 0.10, hintLevel: 'subtle' },
-  4: { rainSpeed: 85,  density: [22, 30], correctInterval: 5.5, correctChance: 0.08, hintLevel: 'subtle' },
-  5: { rainSpeed: 95,  density: [25, 35], correctInterval: 6.0, correctChance: 0.07, hintLevel: 'none' },
-  6: { rainSpeed: 105, density: [28, 40], correctInterval: 6.5, correctChance: 0.06, hintLevel: 'none' },
+  easy:   { rainSpeed: 55,  density: [15, 22], correctInterval: 4.0, correctChance: 0.08, hintLevel: 'subtle', powerUpChance: 0.03 },
+  medium: { rainSpeed: 75,  density: [22, 32], correctInterval: 5.5, correctChance: 0.06, hintLevel: 'subtle', powerUpChance: 0.02 },
+  hard:   { rainSpeed: 100, density: [30, 45], correctInterval: 7.0, correctChance: 0.04, hintLevel: 'subtle', powerUpChance: 0.015 },
 };
 
 // Fun UTF-8 decoy characters — mix of scripts, symbols, math, and lookalikes
@@ -52,7 +49,7 @@ const UTF8_DECOYS = [
 // Also keep regular A-Z for some English letter noise
 const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
-export function getDecoyLetter(word, grade) {
+export function getDecoyLetter(word) {
   const wordLetters = new Set(word.split(''));
 
   // 70% chance of UTF-8 character, 30% chance of English letter

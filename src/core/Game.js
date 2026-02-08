@@ -9,15 +9,13 @@ export class Game {
     this.paused = false;
 
     // Game data
-    this.grade = 3;
+    this.difficulty = 'medium';
     this.score = 0;
-    this.currentWordIndex = 0;
-    this.wordsPerLevel = 5;
     this.currentWord = null;
     this.nextLetterIndex = 0;
     this.wrongGrabs = 0;
-    this.levelWords = [];
-    this.levelResults = [];
+    this.wordIndex = 0;
+    this.totalWordsCompleted = 0;
 
     this._initRenderer();
     this._initScene();
@@ -55,10 +53,8 @@ export class Game {
   }
 
   _initCamera() {
-    // Use a perspective camera looking down the play field
     const aspect = window.innerWidth / window.innerHeight;
     this.camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 200);
-    // Camera positioned behind and above, looking forward-down
     this.camera.position.set(0, -2, 18);
     this.camera.lookAt(0, 5, 0);
   }
@@ -89,9 +85,7 @@ export class Game {
     this.systems.forEach(s => s.onStateChange && s.onStateChange(newState, oldState));
   }
 
-  // Screen-space boundaries for the play field
   getPlayBounds() {
-    // Approximate world-space bounds visible at z=0 plane
     const vFov = this.camera.fov * Math.PI / 180;
     const dist = this.camera.position.z;
     const halfH = Math.tan(vFov / 2) * dist;
