@@ -207,6 +207,18 @@ html, body {
   100% { transform: scale(1); }
 }
 
+.letter-blank.lost {
+  border-color: #ff4466;
+  background: rgba(255, 68, 102, 0.15);
+  animation: blankLost 0.3s ease;
+}
+
+@keyframes blankLost {
+  0% { transform: scale(1); border-color: #ff4466; }
+  50% { transform: scale(0.8); }
+  100% { transform: scale(1); border-color: rgba(0, 255, 170, 0.3); }
+}
+
 /* =========================================
    WORD INTRO
    ========================================= */

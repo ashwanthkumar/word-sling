@@ -79,10 +79,17 @@ export class CollisionSystem {
 
     const audio = this.game.getSystem(AudioManager);
     const particles = this.game.getSystem(ParticleSystem);
+    const hud = this.game.getSystem(HUD);
 
     if (audio) audio.playBuzz();
     if (particles) particles.burstAt(letter.mesh.position.x, letter.mesh.position.y, 0xff4466, 5);
     if (ship) ship.flashRed();
+
+    // Lose one collected letter
+    if (this.game.nextLetterIndex > 0) {
+      this.game.nextLetterIndex--;
+      if (hud) hud.unfillBlank(this.game.nextLetterIndex);
+    }
 
     const uiLayer = document.getElementById('ui-layer');
     uiLayer.classList.add('shake');

@@ -30,6 +30,18 @@ export class HUD {
     this.updateScore();
   }
 
+  unfillBlank(index) {
+    if (this.blanks[index]) {
+      this.blanks[index].textContent = '';
+      this.blanks[index].classList.remove('filled');
+      this.blanks[index].classList.add('lost');
+      setTimeout(() => {
+        if (this.blanks[index]) this.blanks[index].classList.remove('lost');
+      }, 300);
+    }
+    this.updateScore();
+  }
+
   updateScore() {
     if (this.el) {
       const scoreEl = this.el.querySelector('.hud-score');
