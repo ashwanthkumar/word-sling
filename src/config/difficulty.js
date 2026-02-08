@@ -1,7 +1,7 @@
 export const DIFFICULTY = {
-  easy:   { rainSpeed: 55,  density: [15, 22], correctInterval: 4.0, correctChance: 0.08, hintLevel: 'subtle', powerUpChance: 0.03 },
-  medium: { rainSpeed: 75,  density: [22, 32], correctInterval: 5.5, correctChance: 0.06, hintLevel: 'subtle', powerUpChance: 0.02 },
-  hard:   { rainSpeed: 100, density: [30, 45], correctInterval: 7.0, correctChance: 0.04, hintLevel: 'subtle', powerUpChance: 0.015 },
+  easy:   { rainSpeed: 30,  density: [8, 14],  correctInterval: 2.5, correctChance: 0.15, hintLevel: 'subtle', powerUpChance: 0.05 },
+  medium: { rainSpeed: 45,  density: [12, 18], correctInterval: 3.5, correctChance: 0.10, hintLevel: 'subtle', powerUpChance: 0.035 },
+  hard:   { rainSpeed: 55,  density: [15, 22], correctInterval: 4.0, correctChance: 0.08, hintLevel: 'subtle', powerUpChance: 0.03 },
 };
 
 // Fun UTF-8 decoy characters — mix of scripts, symbols, math, and lookalikes

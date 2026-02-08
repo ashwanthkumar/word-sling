@@ -69,7 +69,13 @@ const gameFlow = {
   },
 
   _onPreLaunch() {
-    const wordData = getNextWord(game.wordIndex);
+    let wordData;
+    if (game.forceWord) {
+      wordData = game.forceWord;
+      game.forceWord = null;
+    } else {
+      wordData = getNextWord(game.wordIndex);
+    }
     if (!wordData) return;
 
     game.currentWord = wordData.word;
@@ -96,11 +102,18 @@ const gameFlow = {
 
   _onPlaying() {
     if (game.totalWordsCompleted === 0) {
-      const hint = document.createElement('div');
-      hint.className = 'swipe-hint';
-      hint.textContent = '\u27f5  SWIPE TO MOVE  \u27f6';
-      document.getElementById('ui-layer').appendChild(hint);
-      setTimeout(() => hint.remove(), 3500);
+      const uiLayer = document.getElementById('ui-layer');
+      const swipeHint = document.createElement('div');
+      swipeHint.className = 'swipe-hint';
+      swipeHint.textContent = '\u27f5  SWIPE TO MOVE  \u27f6';
+      uiLayer.appendChild(swipeHint);
+      setTimeout(() => swipeHint.remove(), 3500);
+
+      const shootHint = document.createElement('div');
+      shootHint.className = 'swipe-hint shoot-hint';
+      shootHint.textContent = 'TAP & HOLD TO SHOOT';
+      uiLayer.appendChild(shootHint);
+      setTimeout(() => shootHint.remove(), 3500);
     }
   },
 

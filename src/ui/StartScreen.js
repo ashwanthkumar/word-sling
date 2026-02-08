@@ -1,4 +1,5 @@
-import { loadProgress, saveProgress, getGunLevel } from '../utils.js';
+import { loadProgress, saveProgress, getGunLevel, getEffectiveConfidence, getWordStatus } from '../utils.js';
+import { WORD_LIST } from '../config/words.js';
 
 export class StartScreen {
   init() {
@@ -28,6 +29,7 @@ export class StartScreen {
       <button class="launch-btn">LAUNCH</button>
       <div class="stats-line">Words Built: ${totalWords} &nbsp;&middot;&nbsp; ${gun.name}</div>
       <div class="start-btns-row">
+        <button class="words-btn">WORDS</button>
         <button class="options-btn">OPTIONS</button>
         <button class="credits-btn">CREDITS</button>
       </div>
@@ -50,6 +52,11 @@ export class StartScreen {
     this.el.querySelector('.launch-btn').addEventListener('click', () => {
       this.hide();
       this.game.setState('PRE_LAUNCH');
+    });
+
+    // Words
+    this.el.querySelector('.words-btn').addEventListener('click', () => {
+      this._showWordBrowser();
     });
 
     // Options
@@ -109,6 +116,132 @@ export class StartScreen {
     });
 
     ui.appendChild(overlay);
+  }
+
+  _showWordBrowser() {
+    const ui = document.getElementById('ui-layer');
+    const progress = loadProgress();
+    const wordData = progress.words || {};
+
+    const overlay = document.createElement('div');
+    overlay.className = 'words-overlay fade-in';
+
+    let activeFilter = 'all';
+    let activeLengthFilter = 0; // 0 = all lengths
+
+    const getStatus = (word) => {
+      const key = word.toLowerCase();
+      return getWordStatus(wordData[key]);
+    };
+
+    const getConfidence = (word) => {
+      const key = word.toLowerCase();
+      return Math.round(getEffectiveConfidence(wordData[key]) * 100);
+    };
+
+    const renderList = () => {
+      const listEl = overlay.querySelector('.words-list');
+      listEl.innerHTML = '';
+
+      const filtered = WORD_LIST.map((entry, idx) => ({ ...entry, idx }))
+        .filter(entry => {
+          if (activeFilter !== 'all' && getStatus(entry.word) !== activeFilter) return false;
+          if (activeLengthFilter > 0) {
+            if (activeLengthFilter >= 12 ? entry.word.length < 12 : entry.word.length !== activeLengthFilter) return false;
+          }
+          return true;
+        });
+
+      if (filtered.length === 0) {
+        listEl.innerHTML = '<div class="words-list-empty">No words in this category yet.</div>';
+        return;
+      }
+
+      for (const entry of filtered) {
+        const status = getStatus(entry.word);
+        const confidence = getConfidence(entry.word);
+        const statusLabel = status === 'new' ? 'NEW' : status.toUpperCase();
+
+        const row = document.createElement('div');
+        row.className = 'word-item';
+        row.innerHTML = `
+          <div class="word-item-info">
+            <div class="word-item-top">
+              <span class="word-item-word">${entry.word}</span>
+              <span class="word-status ${status}">${statusLabel}</span>
+            </div>
+            <div class="word-item-meaning">${entry.meaning}</div>
+            <div class="word-confidence-bar">
+              <div class="word-confidence-fill ${status}" style="width: ${confidence}%"></div>
+            </div>
+          </div>
+          <button class="word-play-btn">PLAY</button>
+        `;
+
+        row.querySelector('.word-play-btn').addEventListener('click', (e) => {
+          e.stopPropagation();
+          overlay.remove();
+          this.hide();
+          this.game.forceWord = { word: entry.word, meaning: entry.meaning };
+          this.game.wordIndex = entry.idx;
+          this.game.setState('PRE_LAUNCH');
+        });
+
+        listEl.appendChild(row);
+      }
+    };
+
+    overlay.innerHTML = `
+      <div class="words-header">
+        <h2>WORDS</h2>
+        <button class="words-close-btn">\u2715</button>
+      </div>
+      <div class="words-filters">
+        <button class="words-filter-btn active" data-filter="all">ALL</button>
+        <button class="words-filter-btn" data-filter="mastered">MASTERED</button>
+        <button class="words-filter-btn" data-filter="learning">LEARNING</button>
+        <button class="words-filter-btn" data-filter="new">NEW</button>
+      </div>
+      <div class="words-filters words-length-filters">
+        <button class="words-filter-btn active" data-length="0">ALL</button>
+        <button class="words-filter-btn" data-length="3">3</button>
+        <button class="words-filter-btn" data-length="4">4</button>
+        <button class="words-filter-btn" data-length="5">5</button>
+        <button class="words-filter-btn" data-length="6">6</button>
+        <button class="words-filter-btn" data-length="7">7</button>
+        <button class="words-filter-btn" data-length="8">8</button>
+        <button class="words-filter-btn" data-length="9">9</button>
+        <button class="words-filter-btn" data-length="10">10</button>
+        <button class="words-filter-btn" data-length="11">11</button>
+        <button class="words-filter-btn" data-length="12">12+</button>
+      </div>
+      <div class="words-list"></div>
+    `;
+
+    overlay.querySelector('.words-close-btn').addEventListener('click', () => {
+      overlay.remove();
+    });
+
+    overlay.querySelectorAll('.words-filters:not(.words-length-filters) .words-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        overlay.querySelectorAll('.words-filters:not(.words-length-filters) .words-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeFilter = btn.dataset.filter;
+        renderList();
+      });
+    });
+
+    overlay.querySelectorAll('.words-length-filters .words-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        overlay.querySelectorAll('.words-length-filters .words-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        activeLengthFilter = parseInt(btn.dataset.length);
+        renderList();
+      });
+    });
+
+    ui.appendChild(overlay);
+    renderList();
   }
 
   _showCredits() {

@@ -44,6 +44,24 @@ export function saveProgress(progress) {
   }
 }
 
+// Effective confidence decays over time based on forgetting curve.
+// Streak lengthens the half-life (well-practiced words fade slower).
+export function getEffectiveConfidence(data) {
+  if (!data || !data.lastSeen) return 0;
+  const hoursSince = (Date.now() - new Date(data.lastSeen).getTime()) / 3600000;
+  const halfLife = 168 * (1 + (data.streak || 0) * 0.5); // 7-day base, grows with streak
+  const decay = Math.pow(0.5, hoursSince / halfLife);
+  return data.confidence * decay;
+}
+
+// Derive status from effective confidence: new / learning / mastered
+export function getWordStatus(data) {
+  if (!data || !data.lastSeen) return 'new';
+  const eff = getEffectiveConfidence(data);
+  if (eff >= 0.7) return 'mastered';
+  return 'learning';
+}
+
 export function updateWordProgress(word, wasClean) {
   const progress = loadProgress();
   const key = word.toLowerCase();
@@ -55,8 +73,6 @@ export function updateWordProgress(word, wasClean) {
       wrongGrabs: 0,
       lastSeen: null,
       confidence: 0,
-      nextReview: new Date().toISOString(),
-      status: 'learning',
       streak: 0,
     };
   }
@@ -75,31 +91,11 @@ export function updateWordProgress(word, wasClean) {
   data.attempts++;
   data.lastSeen = new Date().toISOString();
 
-  const hours = calculateReviewInterval(data.confidence, data.streak);
-  data.nextReview = new Date(Date.now() + hours * 3600000).toISOString();
-
-  if (data.confidence >= 0.8 && data.streak >= 3) {
-    data.status = 'mastered';
-  } else if (data.confidence >= 0.4) {
-    data.status = 'learning';
-  } else {
-    data.status = 'struggling';
-  }
-
-  const masteredCount = Object.values(progress.words).filter(w => w.status === 'mastered').length;
+  const masteredCount = Object.values(progress.words).filter(w => getWordStatus(w) === 'mastered').length;
   progress.settings.totalWordsLearned = masteredCount;
 
   saveProgress(progress);
   return progress;
-}
-
-function calculateReviewInterval(confidence, streak) {
-  if (confidence < 0.3) return 1;
-  if (confidence < 0.5) return 6;
-  if (confidence < 0.7) return 24;
-  if (confidence < 0.85) return 72;
-  if (confidence < 0.95) return 168;
-  return 720;
 }
 
 export function getNextWord(wordIndex) {
@@ -113,12 +109,12 @@ export function getNextWord(wordIndex) {
 }
 
 function getReviewWord() {
-  const now = new Date();
   const progress = loadProgress();
   const dueWords = [];
 
   for (const [key, data] of Object.entries(progress.words)) {
-    if (data.confidence < 0.8 && new Date(data.nextReview) <= now) {
+    // Words whose effective confidence has decayed below mastery are due for review
+    if (getEffectiveConfidence(data) < 0.7) {
       const entry = WORD_LIST.find(w => w.word.toLowerCase() === key);
       if (entry) dueWords.push(entry);
     }
