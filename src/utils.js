@@ -1,3 +1,5 @@
+import { WORD_DB } from './config/words.js';
+
 const STORAGE_KEY = 'wordSling_progress';
 
 export function loadProgress() {
@@ -69,7 +71,6 @@ export function updateWordProgress(word, grade, wasClean) {
     data.status = 'struggling';
   }
 
-  // Update totals
   const masteredCount = Object.values(progress.words).filter(w => w.status === 'mastered').length;
   progress.settings.totalWordsLearned = masteredCount;
 
@@ -87,7 +88,6 @@ function calculateReviewInterval(confidence, streak) {
 }
 
 export function selectWordsForLevel(grade, count = 5) {
-  const { WORD_DB } = require_worddb();
   const now = new Date();
   const gradeWords = WORD_DB[grade] || [];
   const progress = loadProgress();
@@ -118,12 +118,6 @@ export function selectWordsForLevel(grade, count = 5) {
   }
 
   return shuffle(selected.slice(0, count));
-}
-
-function require_worddb() {
-  // This will be replaced by the dynamic import in main.js
-  // For now, this is a placeholder used by the word selection
-  return { WORD_DB: window.__WORD_DB || {} };
 }
 
 export function shuffle(arr) {

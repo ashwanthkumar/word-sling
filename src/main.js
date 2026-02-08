@@ -11,11 +11,7 @@ import { HUD } from './ui/HUD.js';
 import { WordIntro } from './ui/WordIntro.js';
 import { WordComplete } from './ui/WordComplete.js';
 import { LevelComplete } from './ui/LevelComplete.js';
-import { WORD_DB } from './config/words.js';
 import { selectWordsForLevel, updateWordProgress, saveProgress, loadProgress } from './utils.js';
-
-// Make WORD_DB available globally for selectWordsForLevel
-window.__WORD_DB = WORD_DB;
 
 // Init game
 const container = document.getElementById('game-container');
@@ -35,18 +31,11 @@ const wordIntro = game.addSystem(new WordIntro());
 const wordComplete = game.addSystem(new WordComplete());
 const levelComplete = game.addSystem(new LevelComplete());
 
-// Game flow controller
+// Game flow controller — orchestrates state transitions
 const gameFlow = {
   game: null,
 
-  init() {
-    this.game.systems.forEach(s => {
-      if (s.onStateChange) {
-        const orig = s.onStateChange.bind(s);
-        // We'll handle state changes in the main setState override
-      }
-    });
-  },
+  init() {},
 
   onStateChange(newState, oldState) {
     switch (newState) {
@@ -69,7 +58,6 @@ const gameFlow = {
   },
 
   _onMenu() {
-    // Reset level state
     game.currentWordIndex = 0;
     game.score = 0;
     game.levelResults = [];
@@ -78,13 +66,10 @@ const gameFlow = {
 
   _onPreLaunch() {
     // Select words if starting a new level
-    if (game.levelWords.length === 0 || game.currentWordIndex === 0) {
+    if (game.levelWords.length === 0) {
       game.levelWords = selectWordsForLevel(game.grade, game.wordsPerLevel);
       game.levelResults = [];
-      if (game.currentWordIndex > 0) {
-        // Next level, keep score
-        game.currentWordIndex = 0;
-      }
+      game.currentWordIndex = 0;
     }
 
     const wordData = game.levelWords[game.currentWordIndex];
@@ -97,6 +82,11 @@ const gameFlow = {
     game.currentMeaning = wordData.meaning;
     game.nextLetterIndex = 0;
     game.wrongGrabs = 0;
+
+    // Reset ship position
+    ship.x = 0;
+    ship.targetX = 0;
+    ship.group.position.x = 0;
 
     // Show word intro and HUD
     hud.show(game.currentWord, game.currentWordIndex, game.wordsPerLevel);
@@ -111,7 +101,6 @@ const gameFlow = {
   },
 
   _onPlaying() {
-    // Show swipe hint on first word
     if (game.currentWordIndex === 0) {
       const hint = document.createElement('div');
       hint.className = 'swipe-hint';
@@ -122,11 +111,9 @@ const gameFlow = {
   },
 
   _onWordComplete() {
-    // Update spaced repetition
     const wasClean = game.wrongGrabs === 0;
     updateWordProgress(game.currentWord, game.grade, wasClean);
 
-    // Show celebration
     const shipPos = ship.getPosition();
     particleSystem.celebrationBurst(shipPos.x, shipPos.y);
     audioManager.playWordComplete();
@@ -136,7 +123,6 @@ const gameFlow = {
   },
 
   _onLevelComplete() {
-    // Update progress
     const progress = loadProgress();
     progress.settings.totalLevelsCompleted++;
     progress.settings.totalScore += game.score;

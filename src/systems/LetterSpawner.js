@@ -91,7 +91,7 @@ export class LetterSpawner {
   }
 
   onStateChange(newState) {
-    if (newState === 'PRE_LAUNCH' || newState === 'MENU') {
+    if (newState === 'PRE_LAUNCH' || newState === 'MENU' || newState === 'WORD_COMPLETE') {
       this.reset();
     }
   }

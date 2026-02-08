@@ -1,3 +1,9 @@
+import { Ship } from '../entities/Ship.js';
+import { LetterSpawner } from './LetterSpawner.js';
+import { ParticleSystem } from './ParticleSystem.js';
+import { AudioManager } from '../audio/AudioManager.js';
+import { HUD } from '../ui/HUD.js';
+
 export class CollisionSystem {
   init() {
     this.collisionRadius = 1.2;
@@ -6,13 +12,8 @@ export class CollisionSystem {
   update() {
     if (this.game.state !== 'PLAYING') return;
 
-    const ship = this.game.getSystem(
-      this.game.systems.find(s => s.constructor.name === 'Ship')?.constructor
-    );
-    const spawner = this.game.systems.find(s => s.constructor.name === 'LetterSpawner');
-    const audio = this.game.systems.find(s => s.constructor.name === 'AudioManager');
-    const particles = this.game.systems.find(s => s.constructor.name === 'ParticleSystem');
-    const hud = this.game.systems.find(s => s.constructor.name === 'HUD');
+    const ship = this.game.getSystem(Ship);
+    const spawner = this.game.getSystem(LetterSpawner);
 
     if (!ship || !spawner) return;
 
@@ -34,20 +35,22 @@ export class CollisionSystem {
 
       if (dist < this.collisionRadius) {
         if (letter.char === word[nextIdx]) {
-          // Correct letter!
-          this._collectCorrect(letter, spawner, audio, particles, hud, shipPos);
+          this._collectCorrect(letter, spawner, shipPos);
         } else {
-          // Wrong letter
-          this._hitWrong(letter, spawner, audio, particles, ship);
+          this._hitWrong(letter, spawner, ship);
         }
       }
     }
   }
 
-  _collectCorrect(letter, spawner, audio, particles, hud, shipPos) {
+  _collectCorrect(letter, spawner, shipPos) {
     const idx = this.game.nextLetterIndex;
     this.game.nextLetterIndex++;
     this.game.score += 10;
+
+    const audio = this.game.getSystem(AudioManager);
+    const particles = this.game.getSystem(ParticleSystem);
+    const hud = this.game.getSystem(HUD);
 
     if (audio) audio.playChime(idx);
     if (particles) particles.burstAt(shipPos.x, shipPos.y, 0x00ffaa, 8);
@@ -55,7 +58,6 @@ export class CollisionSystem {
 
     spawner.removeLetter(letter);
 
-    // Check if word is complete
     if (this.game.nextLetterIndex >= this.game.currentWord.length) {
       this.game.levelResults.push({
         word: this.game.currentWord,
@@ -66,15 +68,17 @@ export class CollisionSystem {
     }
   }
 
-  _hitWrong(letter, spawner, audio, particles, ship) {
+  _hitWrong(letter, spawner, ship) {
     this.game.wrongGrabs++;
     this.game.score = Math.max(0, this.game.score - 5);
+
+    const audio = this.game.getSystem(AudioManager);
+    const particles = this.game.getSystem(ParticleSystem);
 
     if (audio) audio.playBuzz();
     if (particles) particles.burstAt(letter.mesh.position.x, letter.mesh.position.y, 0xff4466, 5);
     if (ship) ship.flashRed();
 
-    // Screen shake via UI
     const uiLayer = document.getElementById('ui-layer');
     uiLayer.classList.add('shake');
     setTimeout(() => uiLayer.classList.remove('shake'), 100);

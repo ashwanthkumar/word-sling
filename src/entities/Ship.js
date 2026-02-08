@@ -17,6 +17,13 @@ export class Ship {
     const bounds = this.game.getPlayBounds();
     this.y = bounds.bottom * 0.45;
     this.group.position.y = this.y;
+
+    // Hide initially (shown during PRE_LAUNCH/PLAYING)
+    this.group.visible = false;
+  }
+
+  onStateChange(newState) {
+    this.group.visible = (newState === 'PRE_LAUNCH' || newState === 'PLAYING' || newState === 'WORD_COMPLETE');
   }
 
   _createShipMesh() {
